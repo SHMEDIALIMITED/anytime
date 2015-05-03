@@ -3,7 +3,7 @@
 (function(ns){
 
 
-  var pkgName = 'shm.animation';
+  var pkgName = 'shm.anytime';
   var module = ns.angular.module(pkgName, []);
 
 

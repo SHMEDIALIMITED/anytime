@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html ng-app="shm.example.anytime">
+  <head>
+    <meta charset="utf-8">
+    <base href="/">
+    <title>Anytime</title>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/one">One</a></li>
+        <li><a href="/two">Two</a></li>
+      </ul>
+    </nav>
+    <div class="shm" ui-view=""></div>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/anytime/src/anytime.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
