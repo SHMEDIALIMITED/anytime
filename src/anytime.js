@@ -48,19 +48,30 @@
 
 
 
-  module.directive('anytime', ['Anytime', '$rootScope', function(Anytime, $rootScope) {
+  module.directive('anytime', ['Anytime', '$rootScope', 'ANYTIME', '$timeout', function(Anytime, $rootScope, ANYTIME, $timeout) {
     return {
       restrict: 'A',
       link : function(scope, element, attr) {
-        if(!angular.isNumber(attr.anytime)) {
+        if(!angular.isNumber(parseInt(attr.anytime))) {
           throw new Error('anytime attribute needs to be a number');
         }
         if(!angular.isString(attr.anytimeClass)) {
           throw new Error('anytime-class attribute needs to be a string');
         }
-        Anytime.addItem(parseInt(attr.anytime));
-        $rootScope.$on(ANYTIME.START, function() {
-          element.addClass(attr.anytimeClass);
+        var time = attr.anytimeDelay ? parseInt(attr.anytime) + parseInt(attr.anytimeDelay) : parseInt(attr.anytime)
+        Anytime.addItem(time);
+        var unlisten = $rootScope.$on(ANYTIME.START, function() {
+          if(attr.anytimeDelay && angular.isNumber(parseInt(attr.anytimeDelay))) {
+            $timeout(function() {
+              element.addClass(attr.anytimeClass);
+            }, parseInt(attr.anytimeDelay))
+          } else {
+            element.addClass(attr.anytimeClass);
+          }
+        });
+
+        scope.$on('$destroy', function() {
+          unlisten();
         });
       }
     }
