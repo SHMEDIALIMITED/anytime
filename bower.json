@@ -1,0 +1,28 @@
+{
+  "name": "anytime",
+  "version": "0.1.0",
+  "authors": [
+    "Patrick Wolleb <patrick.wolleb@shmedia.co.uk>"
+  ],
+  "description": "Animation timing manager for angular ui-router state transitions",
+  "main": "src/anytime.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "angular",
+    "animation",
+    "timing",
+    "resolve",
+    "state",
+    "ui-router"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
