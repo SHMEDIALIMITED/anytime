@@ -17,14 +17,11 @@
 
   // Animation Manager Class
   var Anytime = function(ANYTIME, $rootScope){
-
     // Times in ms for each element registered on current state
     var items = [];
-
     this.addItem = function(item) {
       items.push(item);
     };
-
     // Called by resolve
     this.release = function() {
       $rootScope.$emit(ANYTIME.START);
@@ -32,57 +29,42 @@
       items.length = 0;
       return itemsToRelease;
     };
-
-    $rootScope.$on(ANYTIME.ADD, this.addItem);
   }
 
 
 
   module.provider('Anytime',function() {
-
     this.resolve = ['Anytime', '$timeout', function(Anytime, $timeout) {
       var items = Anytime.release();
-      var total = items.reduce(function(a,b) {
-        a += b;
-        return a;
+      var highest = items.reduce(function(a,b) {
+        return a > b ? a : b;
       }, 0);
-      return $timeout(angular.noop, 0);
+      return $timeout(angular.noop, highest);
     }];
-
     this.$get = ['ANYTIME','$rootScope', function(ANYTIME, $rootScope) {
       return new Anytime(ANYTIME, $rootScope);
     }];
-
   });
 
 
 
-  module.directive('anytime', function(Anytime) {
+  module.directive('anytime', ['Anytime', '$rootScope', function(Anytime, $rootScope) {
     return {
       restrict: 'A',
-      link : function(scope, el, attr) {
+      link : function(scope, element, attr) {
         if(!angular.isNumber(attr.anytime)) {
-          throw new Error('Anytime directive needs a number');
+          throw new Error('anytime attribute needs to be a number');
+        }
+        if(!angular.isString(attr.anytimeClass)) {
+          throw new Error('anytime-class attribute needs to be a string');
         }
         Anytime.addItem(parseInt(attr.anytime));
+        $rootScope.$on(ANYTIME.START, function() {
+          element.addClass(attr.anytimeClass);
+        });
       }
     }
-  })
-
-
-  // module.config(function($stateProvider, $provide, AnytimeProvider) {
-
-  //   $provide.decorator('$state', function($delegate) {
-  //     var originalTransitionTo = $delegate.transitionTo;
-  //     $delegate.transitionTo = function(to, toParams, options) {
-  //       return originalTransitionTo(to, toParams, angular.extend({
-  //         reload: true
-  //       }, options));
-  //     };
-  //     return $delegate;
-  //   });
-
-  // })
+  }])
 
 
 })(window);
