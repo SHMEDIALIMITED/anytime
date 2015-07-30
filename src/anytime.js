@@ -14,13 +14,16 @@
   });
 
 
-
   // Animation Manager Class
-  var Anytime = function(ANYTIME, $rootScope){
+  var Anytime = function(ANYTIME, $rootScope, config){
+    this.config = config;
     // Times in ms for each element registered on current state
     var items = [];
     this.addItem = function(item) {
-      items.push(item);
+      items.push({
+        time : item,
+        index : items.length
+      });
     };
     // Called by resolve
     this.release = function() {
@@ -34,15 +37,21 @@
 
 
   module.provider('Anytime',function() {
+    var config = {};
+    this.setDefaults = function(c) {
+      config.time = c.time || 200;
+      config.class = c.class || 'anytime';
+      config.delay = c.delay || 0;
+    };
     this.resolve = ['Anytime', '$timeout', function(Anytime, $timeout) {
       var items = Anytime.release();
       var highest = items.reduce(function(a,b) {
-        return a > b ? a : b;
-      }, 0);
-      return $timeout(angular.noop, highest);
+        return a.time > b.time ? a : b;
+      }, {time:0});
+      return $timeout(angular.noop, highest.time + items.length * Anytime.config.delay);
     }];
     this.$get = ['ANYTIME','$rootScope', function(ANYTIME, $rootScope) {
-      return new Anytime(ANYTIME, $rootScope);
+      return new Anytime(ANYTIME, $rootScope, config);
     }];
   });
 
@@ -52,9 +61,11 @@
     return {
       restrict: 'A',
       link : function(scope, element, attr) {
+        attr.anytime = attr.anytime || Anytime.config.time;
         if(!angular.isNumber(parseInt(attr.anytime))) {
           throw new Error('anytime attribute needs to be a number');
         }
+        attr.anytimeClass = attr.anytimeClass ? Anytime.config.class + ' ' + attr.anytimeClass : Anytime.config.class;
         if(!angular.isString(attr.anytimeClass)) {
           throw new Error('anytime-class attribute needs to be a string');
         }
